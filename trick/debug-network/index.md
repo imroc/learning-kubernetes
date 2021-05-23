@@ -30,3 +30,11 @@ $ netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
 ESTABLISHED 18
 TIME_WAIT 457
 ```
+
+## 使用 wireshark 分析 dns
+
+过滤没有收到响应的 dns 请求:
+
+```txt
+dns && (dns.flags.response == 0) && ! dns.response_in
+```
