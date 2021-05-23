@@ -35,7 +35,7 @@ rancher 管理了其它 k8s 集群，架构图:
 
 ![](9.png)
 
-3. 输出 cluster name:
+3. 输入 cluster name:
 
 ![](1.png)
 
@@ -52,11 +52,11 @@ rancher 管理了其它 k8s 集群，架构图:
 
 ![](4.png)
 
-7. 将 context 切换到安装 rancher 的集群 (root cluster)，可以发现添加集群后，自动创建了一些 namespace: 1 个 `c-` 开头的，2 个 `-p` 开头的:
+7. 将 context 切换到安装 rancher 的集群 (root cluster)，可以发现添加集群后，自动创建了一些 namespace: 1 个 `c-` 开头的，2 个 `p-` 开头的:
 
 ![](5.png)
 
-猜想是 `c-` 开头的 namespace 被 rancher 用来存储所添加的 `cluster` 的相关信息；`-p` 用于存储 `project` 相关的信息，官方也说了会自动为每个 cluster 创建 2 个 project:
+猜想是 `c-` 开头的 namespace 被 rancher 用来存储所添加的 `cluster` 的相关信息；`p-` 用于存储 `project` 相关的信息，官方也说了会自动为每个 cluster 创建 2 个 project:
 
 ![](10.png)
 
