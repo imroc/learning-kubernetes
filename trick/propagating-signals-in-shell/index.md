@@ -11,7 +11,7 @@ weight: 70
 
 但有时我们会遇到一种情况: 业务逻辑处理了 `SIGTERM` 信号，但 Pod 停止时好像没收到信号导致优雅停止逻辑不生效。
 
-通常是因为我们的业务进程是在脚本中启动的，容器的启动入口使用了脚本，所以容器中的主进程并不是我们所希望的业务进程而是 shell 进程，导致业务进程收不到 `SIGTERM` 信号，更详细的原因解释请参考 [Kubernetes 常见问题: 为什么我的容器收不到 SIGTERM 信号 ?](https://imroc.cc/k8s/faq/why-cannot-receive-sigterm/) ，下面将介绍几种解决方案。
+通常是因为我们的业务进程是在脚本中启动的，容器的启动入口使用了脚本，所以容器中的主进程并不是我们所希望的业务进程而是 shell 进程，导致业务进程收不到 `SIGTERM` 信号，更详细的原因解释请参考 [Kubernetes 常见问题: 为什么我的容器收不到 SIGTERM 信号 ?](https://imroc.cc/k8s/faq/why-cannot-receive-sigterm/) 下面将介绍几种解决方案。
 
 ## 使用 exec 启动
 
