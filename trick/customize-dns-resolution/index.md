@@ -25,6 +25,7 @@ kubectl -n kube-system edit configmap coredns
 ```txt
             hosts {
                 10.10.10.10 harbor.example.com
+                10.10.10.11 grafana.example.com
                 fallthrough
             }
 ```

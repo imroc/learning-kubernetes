@@ -100,3 +100,4 @@ wait
 * [Gracefully Stopping Docker Containers](https://www.ctl.io/developers/blog/post/gracefully-stopping-docker-containers/)
 * [Why Your Dockerized Application Isn’t Receiving Signals](https://hynek.me/articles/docker-signals/)
 * [Best practices for propagating signals on Docker](https://www.kaggle.com/residentmario/best-practices-for-propagating-signals-on-docker)
+* [Graceful shutdowns with ECS](https://aws.amazon.com/cn/blogs/containers/graceful-shutdowns-with-ecs/)
