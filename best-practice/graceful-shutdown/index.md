@@ -25,21 +25,50 @@ Pod 销毁时，会停止容器内的进程，通常在停止的过程中我们�
 要实现优雅终止，务必在业务代码里面处理下 `SIGTERM` 信号，go 代码示例:
 
 ```go
-sigs := make(chan os.Signal, 1)
-signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-go shutdown(sigs)
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
+func main() {
+
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	//registers the channel
+	signal.Notify(sigs, syscall.SIGTERM)
+
+	go func() {
+		sig := <-sigs
+		fmt.Println("Caught SIGTERM, shutting down")
+		// Finish any outstanding requests, then...
+		done <- true
+	}()
+
+	fmt.Println("Starting application")
+	// Main logic goes here
+	<-done
+	fmt.Println("exiting")
+}
 ```
 
-收到信号后运行优雅终止的逻辑:
+python 代码示例:
 
-```go
-func shutdown(sigs <-chan os.Signal){
-	<- sigs
-	err := stopServer()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+```python
+import signal, time, os
+
+def shutdown(signum, frame):
+    print('Caught SIGTERM, shutting down')
+    # Finish any outstanding requests, then...
+    exit(0)
+
+if __name__ == '__main__':
+    # Register handler
+    signal.signal(signal.SIGTERM, shutdown)
+    # Main logic goes here
 ```
 
 ## 别让 shell 导致收不到 SIGTERM 信号
