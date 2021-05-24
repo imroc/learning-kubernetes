@@ -1,5 +1,5 @@
 ---
-title: "为什么容器收不到 SIGTERM 信号 ?"
+title: "为什么我的容器收不到 SIGTERM 信号 ?"
 type: book
 date: "2021-05-24"
 ---
@@ -16,7 +16,7 @@ date: "2021-05-24"
 
 1. 容器主进程是 shell，业务进程是在 shell 中启动的，成为了 shell 进程的子进程。
 2. shell 进程默认不会处理 `SIGTERM` 信号，自己不会退出，也不会将信号传递给子进程，导致业务进程不会触发停止逻辑。
-3. 当等到 K8S 优雅停止超时时间 (默认 30s)，发送 `SIGKILL` 强制杀死 shell 及其子进程。
+3. 当等到 K8S 优雅停止超时时间 (`terminationGracePeriodSeconds`，默认 30s)，发送 `SIGKILL` 强制杀死 shell 及其子进程。
 
 ## 如何解决 ?
 
