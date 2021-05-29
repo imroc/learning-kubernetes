@@ -22,3 +22,7 @@ date: "2021-05-24"
 
 1. 如果可以的话，尽量不使用 shell 启动业务进程。
 2. 如果一定要通过 shell 启动，比如在启动前需要用 shell 进程一些判断和处理，或者需要启动多个进程，那么就需要在 shell 中传递下 SIGTERM 信号了，解决方案请参考 [Kubernetes 实用技巧: 在 SHELL 中传递信号](https://imroc.cc/k8s/trick/propagating-signals-in-shell/) 。
+
+## 参考资料
+
+* [Kubernetes 最佳实践: 优雅终止](https://imroc.cc/k8s/best-practice/graceful-shutdown/)
