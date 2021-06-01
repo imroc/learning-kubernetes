@@ -21,7 +21,7 @@ CLB 转发的数据包不会做 SNAT，所以报文到达节点时源 IP 就是 
 
 ![](1.png)
 
-**解决方案2:** 若担心直接放开整个 NodePort 区间所有端口有安全风险，可以只暴露 service 所用到的 Nodeport。
+**解决方案2:** 若担心直接放开整个 NodePort 区间所有端口有安全风险，可以只暴露 service 所用到的 NodePort (比较麻烦)。
 
 **解决方案3:** 若只允许固定 IP 段的 client 访问 ingressgateway，可以只对这个 IP 段放开整个 NodePort 区间所有端口。
 
