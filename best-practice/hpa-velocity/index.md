@@ -53,8 +53,9 @@ spec:
   behavior: # 这里是重点
     scaleUp:
       policies:
-      - type: percent
-        value: 900%
+      - type: Percent
+        value: 900
+        periodSeconds: 5
 ```
 
 上面的配置表示扩容时立即新增当前 9 倍数量的副本数，即立即扩容到当前 10 倍的 Pod 数量，当然也不能超过 `maxReplicas` 的限制。
