@@ -3,7 +3,6 @@ title: "Pod 绑定 NUMA 亲和性"
 type: book
 date: "2021-05-08"
 weight: 100
-draft: true
 ---
 
 ## 前提条件
