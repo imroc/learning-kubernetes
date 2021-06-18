@@ -13,9 +13,9 @@ Kubernetes 支持两种方式将 Pod 打散调度:
 * Pod 反亲和 (Pod Anti-Affinity)
 * Pod 拓扑分布约束 (Pod Topology Spread Constraints)
 
-本文介绍两种方式的使用示例以及对比。
+本文介绍两种方式的用法示例与对比总结。
 
-## 使用 podAntiAffinity 打散 Pod
+## 使用 podAntiAffinity
 
 **将 Pod 强制打散调度到不同节点上(强反亲和)，以避免单点故障**:
 
@@ -61,7 +61,7 @@ spec:
 
 将 `kubernetes.io/hostname` 换成 `topology.kubernetes.io/zone`，其余同上。
 
-## 使用 topologySpreadConstraints 打散 Pod
+## 使用 topologySpreadConstraints
 
 **将 Pod 最大程度上均匀的打散调度到各个节点上**:
 
