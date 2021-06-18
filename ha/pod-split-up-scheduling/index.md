@@ -166,6 +166,9 @@ spec:
             app: nginx
 ```
 
+## 小结
+
+从示例能明显看出，`topologySpreadConstraints` 比 `podAntiAffinity` 功能更强，提供了提供更精细的调度控制，我们可以理解成 `topologySpreadConstraints` 是 `podAntiAffinity` 的升级版。在 K8S v1.18 以上，`topologySpreadConstraints` 特性默认启用，所以建议 v1.18 的集群使用 `topologySpreadConstraints` 来打散 Pod 的分布以提高服务可用性。
 
 ## 参考资料
 
