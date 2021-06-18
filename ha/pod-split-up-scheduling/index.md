@@ -147,6 +147,26 @@ spec:
             app: nginx
 ```
 
+更进一步，**将 Pod 尽量均匀的打散调度到各个可用区的同时，在可用区内部各节点也尽量打散**:
+
+```yaml
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+        - matchLabels:
+            app: nginx
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+        - matchLabels:
+            app: nginx
+```
+
+
 ## 参考资料
 
 * [Pod Topology Spread Constraints](https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/)
