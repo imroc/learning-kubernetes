@@ -121,7 +121,7 @@ spec:
             app: nginx
 ```
 
-或者 **将 Pod 尽量均匀的打散调度到各个节点上** (DoNotSchedule 改为 ScheduleAnyway):
+或者类似弱反亲和， **将 Pod 尽量均匀的打散调度到各个节点上，不强制** (DoNotSchedule 改为 ScheduleAnyway):
 
 ```yaml
     spec:
@@ -147,7 +147,7 @@ spec:
             app: nginx
 ```
 
-更进一步，可以 **将 Pod 尽量均匀的打散调度到各个可用区的同时，在可用区内部各节点也尽量打散**:
+更进一步地，可以 **将 Pod 尽量均匀的打散调度到各个可用区的同时，在可用区内部各节点也尽量打散**:
 
 ```yaml
     spec:
