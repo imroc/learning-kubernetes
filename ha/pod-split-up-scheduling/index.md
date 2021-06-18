@@ -52,9 +52,9 @@ spec:
   ```yaml
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
-      - podAffinityTerm:
-          topologyKey: kubernetes.io/hostname
-        weight: 100
+    - podAffinityTerm:
+        topologyKey: kubernetes.io/hostname
+      weight: 100
   ```
 
 **将 Pod 强制打散调度到不同可用区(机房)，以实现跨机房容灾**:
