@@ -28,7 +28,7 @@ Pod 销毁时，会停止容器内的进程，通常在停止的过程中我们�
 
 如果容器启动入口使用了脚本 (如 `CMD ["/start.sh"]`)，业务进程就成了 shell 的子进程，在 Pod 停止时业务进程可能收不到 `SIGTERM` 信号，因为 shell 不会自动传递信号给子进程。更详细解释请参考 [为什么我的容器收不到 SIGTERM 信号 ?](https://imroc.cc/k8s/faq/why-cannot-receive-sigterm/)
 
-如果解决？请参考 [实用技巧: 在 SHELL 中传递信号](https://imroc.cc/k8s/trick/propagating-signals-in-shell/) 。
+如何解决？请参考 [实用技巧: 在 SHELL 中传递信号](https://imroc.cc/k8s/trick/propagating-signals-in-shell/) 。
 
 ## 合理使用 preStop Hook
 
