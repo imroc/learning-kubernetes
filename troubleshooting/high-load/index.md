@@ -20,10 +20,20 @@ Kubernetes 节点高负载如何排查？本文来盘一盘。
 ps -eLf | wc -l
 ```
 
-如果数量过多，可以通过以下命令统计线程数排名:
+如果数量过多，可以大致扫下有哪些进程，如果有大量重复启动命令的进程，就可能是这个进程对应程序的 bug 导致。
+
+还可以通过以下命令统计线程数排名:
 
 ```bash
 printf "NUM\tPID\tCOMMAND\n" && ps -eLf | awk '{$1=null;$3=null;$4=null;$5=null;$6=null;$7=null;$8=null;$9=null;print}' | sort |uniq -c |sort -rn | head -10
 ```
 
 找出线程数量较多的进程，可能就是某个容器的线程泄漏，导致 PID 耗尽。
+
+随便取其中一个 PID，用 nsenter 进入进程 netns:
+
+```bash
+nsenter -n --target <PID>
+```
+
+然后执行 `ip a` 看下 IP 地址，如果不是节点 IP，通常就是 Pod IP，可以通过 `kubectl get pod -o wide -A | grep <IP>` 来反查进程来自哪个 Pod。
