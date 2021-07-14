@@ -22,7 +22,7 @@ Pod 销毁时，会停止容器内的进程，通常在停止的过程中我们�
 
 ## 业务代码处理 SIGTERM 信号
 
-要实现优雅终止，务必在业务代码里面处理下 `SIGTERM` 信号，参考 [处理 SIGTERM 代码示例](https://imroc.cc/k8s/ref/code-example-of-handle-sigterm/) 。
+要实现优雅终止，务必在业务代码里面处理下 `SIGTERM` 信号，主要逻辑是不接受增量连接，继续处理存量连接，所有连接断完才退出，参考 [处理 SIGTERM 代码示例](https://imroc.cc/k8s/ref/code-example-of-handle-sigterm/) 。
 
 ## 别让 shell 导致收不到 SIGTERM 信号
 
