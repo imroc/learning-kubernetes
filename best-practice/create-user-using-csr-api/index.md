@@ -114,7 +114,3 @@ kubectl config set-context <context> --cluster=<cluster> --user=${USERNAME}
 # 使用刚增加的 context
 kubectl config use-context <context>
 ```
-
-## 配置用户权限
-
-参考这里的 [YAML 示例](https://imroc.cc/k8s/ref/yaml/rbac.html#user-%E6%8E%88%E6%9D%83) 。
