@@ -16,7 +16,15 @@ Kubernetes 节点高负载如何排查？本文来盘一盘。
 
 如果 load 高但 CPU 利用率不高，通常是进程/线程数过多，排队等 CPU 切换的进程/线程较多。
 
-通过以下命令统计 PID 数量:
+看系统中可创建的进程数实际值:
+
+```bash
+cat /proc/sys/kernel/pid_max
+```
+
+> 修改方式: sysctl -w  kernel.pid_max=65535
+
+通过以下命令统计当前 PID 数量:
 
 ```bash
 ps -eLf | wc -l
