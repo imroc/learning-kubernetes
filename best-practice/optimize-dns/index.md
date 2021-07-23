@@ -61,7 +61,6 @@ kubectl -n kube-system edit configmap coredns
 
 需要注意的是，启用 autopath 后，由于 coredns 需要 watch 所有的 pod，会增加 coredns 的内存消耗，根据情况适当调节 coredns 的 memory request 和 limit。
 
-
 ## 部署 NodeLocal DNSCache
 
 参考 k8s 官方文档 [Using NodeLocal DNSCache in Kubernetes clusters](https://kubernetes.io/docs/tasks/administer-cluster/nodelocaldns/)
