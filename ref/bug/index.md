@@ -2,6 +2,7 @@
 title: "BUG 踩坑"
 type: book
 date: "2021-07-26"
+weight: 4
 ---
 
 ## kubelet 与 apiserver 断连后仍然使用旧连接导致连接失败 (1.16-1.18)
