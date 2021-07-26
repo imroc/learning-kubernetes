@@ -7,6 +7,7 @@ weight: 4
 
 ## kubelet 与 apiserver 断连后仍然使用旧连接导致连接失败 (1.16-1.18)
 
+* 现象: kubelet 连不上 apiserver，日志报错 `use of closed network connection`
 * 相关 issue: [#87615](https://github.com/kubernetes/kubernetes/issues/87615)
 * 原因: golang http 包的 bug，参考 [#34978](https://github.com/golang/go/issues/34978) 和 [#40213](https://github.com/golang/go/issues/40213)
 * 解决方案:
