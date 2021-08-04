@@ -8,6 +8,9 @@ date: "2021-08-04"
 
 ```bash
 kubectl get --raw=/api/v1/nodes/11.185.19.215/proxy/metrics/cadvisor
+
+# 查看有哪些指标名
+kubectl get --raw=/api/v1/nodes/11.185.19.215/proxy/metrics/cadvisor | grep -v "#" | awk -F '{' '{print $1}' | awk '{print $1}' | sort | uniq
 ```
 
 ## 测试 Resource Metrics API
