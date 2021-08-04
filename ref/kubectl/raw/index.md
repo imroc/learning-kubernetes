@@ -13,6 +13,12 @@ kubectl get --raw=/api/v1/nodes/11.185.19.215/proxy/metrics/cadvisor
 kubectl get --raw=/api/v1/nodes/11.185.19.215/proxy/metrics/cadvisor | grep -v "#" | awk -F '{' '{print $1}' | awk '{print $1}' | sort | uniq
 ```
 
+## 获取节点 summary 数据
+
+```bash
+kubectl get --raw=/api/v1/nodes/11.185.19.21/proxy/stats/summary
+```
+
 ## 测试 Resource Metrics API
 
 获取指定 namespace 下所有 pod 指标:
