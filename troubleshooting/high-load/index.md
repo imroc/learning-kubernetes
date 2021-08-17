@@ -50,6 +50,8 @@ nsenter -n --target <PID>
 
 然后执行 `ip a` 看下 IP 地址，如果不是节点 IP，通常就是 Pod IP，可以通过 `kubectl get pod -o wide -A | grep <IP>` 来反查进程来自哪个 Pod。
 
+## 进程 D 状态
+
 ## FAQ
 
 ### 如果机器完全无法操作怎么办？

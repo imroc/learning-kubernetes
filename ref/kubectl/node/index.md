@@ -53,3 +53,14 @@ $ kubectl get nodes --no-headers | awk '{print $1}' | xargs -I {} sh -c 'echo -n
 10.0.0.10	257460608(41%)
 10.0.0.12	59242880(9%)
 ```
+
+## 查看节点可用区分布情况
+
+```bash
+$ kubectl get nodes -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.labels.failure-domain\.beta\.kubernetes\.io\/zone}{"\n"}{end}'
+10.83.96.127    100004
+10.83.96.132    100004
+10.83.96.139    100004
+10.83.96.8      100004
+10.83.96.93     100004
+```
