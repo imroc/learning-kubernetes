@@ -3,7 +3,7 @@ title: "Pod 排障"
 type: book
 ---
 
-# Pod 一直处于 Pending 状态
+## Pod 一直处于 Pending 状态
 
 Pending 状态说明 Pod 还没有被调度到某个节点上，需要看下 Pod 事件进一步判断原因，比如:
 
@@ -18,7 +18,7 @@ Events:
 
 下面列举下可能原因和解决方法。
 
-## 节点资源不够
+### 节点资源不够
 
 节点资源不够有以下几种情况:
 
@@ -34,7 +34,7 @@ Events:
 前者与后者相减，可得出剩余可申请的资源。如果这个值小于 Pod 的 request，就不满足 Pod 的资源要求，Scheduler 在 Predicates (预选) 阶段就会剔除掉这个 Node，也就不会调度上去。
 
 
-## 不满足 nodeSelector 与 affinity
+### 不满足 nodeSelector 与 affinity
 
 如果 Pod 包含 nodeSelector 指定了节点需要包含的 label，调度器将只会考虑将 Pod 调度到包含这些 label 的 Node 上，如果没有 Node 有这些 label 或者有这些 label 的 Node 其它条件不满足也将会无法调度。参考官方文档：https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
 
@@ -44,7 +44,7 @@ Events:
 * podAffinity: Pod 亲和性，用于将一些有关联的 Pod 调度到同一个地方，同一个地方可以是指同一个节点或同一个可用区的节点等。
 * podAntiAffinity: Pod 反亲和性，用于避免将某一类 Pod 调度到同一个地方避免单点故障，比如将集群 DNS 服务的 Pod 副本都调度到不同节点，避免一个节点挂了造成整个集群 DNS 解析失败，使得业务中断。
 
-## Node 存在 Pod 没有容忍的污点
+### Node 存在 Pod 没有容忍的污点
 
 如果节点上存在污点 (Taints)，而 Pod 没有响应的容忍 (Tolerations)，Pod 也将不会调度上去。通过 describe node 可以看下 Node 有哪些 Taints:
 
@@ -75,7 +75,7 @@ tolerations:
 
 我们通常使用后者的方法来解决。污点既可以是手动添加也可以是被自动添加，下面来深入分析一下。
 
-### 手动添加的污点
+#### 手动添加的污点
 
 通过类似以下方式可以给节点添加污点:
 
@@ -86,7 +86,7 @@ node "host1" tainted
 
 另外，有些场景下希望新加的节点默认不调度 Pod，直到调整完节点上某些配置才允许调度，就给新加的节点都加上 `node.kubernetes.io/unschedulable` 这个污点。
 
-### 自动添加的污点
+#### 自动添加的污点
 
 如果节点运行状态不正常，污点也可以被自动添加，从 v1.12 开始，`TaintNodesByCondition` 特性进入 Beta 默认开启，controller manager 会检查 Node 的 Condition，如果命中条件就自动为 Node 加上相应的污点，这些 Condition 与 Taints 的对应关系如下:
 
@@ -114,20 +114,20 @@ NetworkUnavailable     True        node.kubernetes.io/network-unavailable
 
 另外，在云环境下，比如腾讯云 TKE，添加新节点会先给这个 Node 加上 `node.cloudprovider.kubernetes.io/uninitialized` 的污点，等 Node 初始化成功后才自动移除这个污点，避免 Pod 被调度到没初始化好的 Node 上。
 
-## 低版本 kube-scheduler 的 bug
+### 低版本 kube-scheduler 的 bug
 
 可能是低版本 `kube-scheduler` 的 bug, 可以升级下调度器版本。
 
-## kube-scheduler 没有正常运行
+### kube-scheduler 没有正常运行
 
 检查 maser 上的 `kube-scheduler` 是否运行正常，异常的话可以尝试重启临时恢复。
 
-## 驱逐后其它可用节点与当前节点有状态应用不在同一个可用区
+### 驱逐后其它可用节点与当前节点有状态应用不在同一个可用区
 
 有时候服务部署成功运行过，但在某个时候节点突然挂了，此时就会触发驱逐，创建新的副本调度到其它节点上，对于已经挂载了磁盘的 Pod，它通常需要被调度到跟当前节点和磁盘在同一个可用区，如果集群中同一个可用区的节点不满足调度条件，即使其它可用区节点各种条件都满足，但不跟当前节点在同一个可用区，也是不会调度的。为什么需要限制挂载了磁盘的 Pod 不能漂移到其它可用区的节点？试想一下，云上的磁盘虽然可以被动态挂载到不同机器，但也只是相对同一个数据中心，通常不允许跨数据中心挂载磁盘设备，因为网络时延会极大的降低 IO 速率。
 
-# Pod 一直处于 Terminating 状态
-## 磁盘爆满
+## Pod 一直处于 Terminating 状态
+### 磁盘爆满
 
 如果 docker 的数据目录所在磁盘被写满，docker 无法正常运行，无法进行删除和创建操作，所以 kubelet 调用 docker 删除容器没反应，看 event 类似这样：
 
@@ -135,7 +135,7 @@ NetworkUnavailable     True        node.kubernetes.io/network-unavailable
 Normal  Killing  39s (x735 over 15h)  kubelet, 10.179.80.31  Killing container with id docker://apigateway:Need to kill Pod
 ```
 
-## 存在 "i" 文件属性
+### 存在 "i" 文件属性
 
 如果容器的镜像本身或者容器启动后写入的文件存在 "i" 文件属性，此文件就无法被修改删除，而删除 Pod 时会清理容器目录，但里面包含有不可删除的文件，就一直删不了，Pod 状态也将一直保持 Terminating，kubelet 报错:
 
@@ -160,7 +160,7 @@ chattr -i /data/docker/overlay2/b1aea29c590aa9abda79f7cf3976422073fb3652757f0391
 
 执行完后等待 kubelet 自动重试，Pod 就可以被自动删除了。
 
-## docker 17 的 bug
+### docker 17 的 bug
 
 docker hang 住，没有任何响应，看 event:
 
@@ -175,17 +175,17 @@ Warning FailedSync 3m (x408 over 1h) kubelet, 10.179.80.31 error determining sta
 * 升级到docker 18. 该版本使用了新的 containerd，针对很多bug进行了修复。
 * 如果出现terminating状态的话，可以提供让容器专家进行排查，不建议直接强行删除，会可能导致一些业务上问题。
 
-## 存在 Finalizers
+### 存在 Finalizers
 
 k8s 资源的 metadata 里如果存在 `finalizers`，那么该资源一般是由某程序创建的，并且在其创建的资源的 metadata 里的 `finalizers` 加了一个它的标识，这意味着这个资源被删除时需要由创建资源的程序来做删除前的清理，清理完了它需要将标识从该资源的 `finalizers` 中移除，然后才会最终彻底删除资源。比如 Rancher 创建的一些资源就会写入 `finalizers` 标识。
 
 处理建议：`kubectl edit` 手动编辑资源定义，删掉 `finalizers`，这时再看下资源，就会发现已经删掉了
 
-## 低版本 kubelet list-watch 的 bug
+### 低版本 kubelet list-watch 的 bug
 
 之前遇到过使用 v1.8.13 版本的 k8s，kubelet 有时 list-watch 出问题，删除 pod 后 kubelet 没收到事件，导致 kubelet 一直没做删除操作，所以 pod 状态一直是 Terminating
 
-## dockerd 与 containerd 的状态不同步
+### dockerd 与 containerd 的状态不同步
 
 判断 dockerd 与 containerd 某个容器的状态不同步的方法：
 
@@ -214,7 +214,7 @@ Sep 18 10:19:49 VM-1-33-ubuntu dockerd[4822]: time="2019-09-18T10:19:49.90394365
 * 临时恢复: 执行 `docker container prune` 或重启 dockerd
 * 长期方案: 运行时推荐直接使用 containerd，绕过 dockerd 避免 docker 本身的各种 BUG
 
-## Daemonset Controller 的 BUG
+### Daemonset Controller 的 BUG
 
 有个 k8s 的 bug 会导致 daemonset pod 无限 terminating，1.10 和 1.11 版本受影响，原因是 daemonset controller 复用 scheduler 的 predicates 逻辑，里面将 nodeAffinity 的 nodeSelector 数组做了排序（传的指针），spec 就会跟 apiserver 中的不一致，daemonset controller 又会为 rollingUpdate类型计算 hash (会用到spec)，用于版本控制，造成不一致从而无限启动和停止的循环。
 
@@ -223,7 +223,7 @@ Sep 18 10:19:49 VM-1-33-ubuntu dockerd[4822]: time="2019-09-18T10:19:49.90394365
 
 升级集群版本可以彻底解决，临时规避可以给 rollingUpdate 类型 daemonset 不使用 nodeAffinity，改用 nodeSelector。
 
-## mount 的目录被其它进程占用
+### mount 的目录被其它进程占用
 
 dockerd 报错 `device or resource busy`:
 
@@ -247,13 +247,13 @@ $ grep 8bde3ec18c5a6915f40dd8adc3b2f296c1e40cc1b2885db4aee0a627ff89ef59 /proc/*/
 ps -f 27187
 ```
 
-# Pod Terminating 慢
+## Pod Terminating 慢
 
-## 可能原因
+### 可能原因
 
 * 进程通过 bash -c 启动导致 kill 信号无法透传给业务进程，参考 [在 SHELL 中传递信号](https://imroc.cc/k8s/trick/propagating-signals-in-shell/)
 
-# Pod 一直处于 Unknown 状态
+## Pod 一直处于 Unknown 状态
 
 通常是节点失联，没有上报状态给 apiserver，到达阀值后 controller-manager 认为节点失联并将其状态置为 `Unknown`。
 
@@ -264,7 +264,7 @@ ps -f 27187
 * 节点被关机
 * 网络不通
 
-# Pod 一直处于 Pending 状态
+## Pod 一直处于 Pending 状态
 Pending 状态说明 Pod 还没有被调度到某个节点上，需要看下 Pod 事件进一步判断原因，比如:
 
 ``` bash
@@ -278,7 +278,7 @@ Events:
 
 下面列举下可能原因和解决方法。
 
-## 节点资源不够
+### 节点资源不够
 
 节点资源不够有以下几种情况:
 
@@ -294,7 +294,7 @@ Events:
 前者与后者相减，可得出剩余可申请的资源。如果这个值小于 Pod 的 request，就不满足 Pod 的资源要求，Scheduler 在 Predicates (预选) 阶段就会剔除掉这个 Node，也就不会调度上去。
 
 
-## 不满足 nodeSelector 与 affinity
+### 不满足 nodeSelector 与 affinity
 
 如果 Pod 包含 nodeSelector 指定了节点需要包含的 label，调度器将只会考虑将 Pod 调度到包含这些 label 的 Node 上，如果没有 Node 有这些 label 或者有这些 label 的 Node 其它条件不满足也将会无法调度。参考官方文档：https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
 
@@ -304,7 +304,7 @@ Events:
 * podAffinity: Pod 亲和性，用于将一些有关联的 Pod 调度到同一个地方，同一个地方可以是指同一个节点或同一个可用区的节点等。
 * podAntiAffinity: Pod 反亲和性，用于避免将某一类 Pod 调度到同一个地方避免单点故障，比如将集群 DNS 服务的 Pod 副本都调度到不同节点，避免一个节点挂了造成整个集群 DNS 解析失败，使得业务中断。
 
-## Node 存在 Pod 没有容忍的污点
+### Node 存在 Pod 没有容忍的污点
 
 如果节点上存在污点 (Taints)，而 Pod 没有响应的容忍 (Tolerations)，Pod 也将不会调度上去。通过 describe node 可以看下 Node 有哪些 Taints:
 
@@ -335,7 +335,7 @@ tolerations:
 
 我们通常使用后者的方法来解决。污点既可以是手动添加也可以是被自动添加，下面来深入分析一下。
 
-### 手动添加的污点
+#### 手动添加的污点
 
 通过类似以下方式可以给节点添加污点:
 
@@ -346,7 +346,7 @@ node "host1" tainted
 
 另外，有些场景下希望新加的节点默认不调度 Pod，直到调整完节点上某些配置才允许调度，就给新加的节点都加上 `node.kubernetes.io/unschedulable` 这个污点。
 
-### 自动添加的污点
+#### 自动添加的污点
 
 如果节点运行状态不正常，污点也可以被自动添加，从 v1.12 开始，`TaintNodesByCondition` 特性进入 Beta 默认开启，controller manager 会检查 Node 的 Condition，如果命中条件就自动为 Node 加上相应的污点，这些 Condition 与 Taints 的对应关系如下:
 
@@ -374,38 +374,38 @@ NetworkUnavailable     True        node.kubernetes.io/network-unavailable
 
 另外，在云环境下，比如腾讯云 TKE，添加新节点会先给这个 Node 加上 `node.cloudprovider.kubernetes.io/uninitialized` 的污点，等 Node 初始化成功后才自动移除这个污点，避免 Pod 被调度到没初始化好的 Node 上。
 
-## 低版本 kube-scheduler 的 bug
+### 低版本 kube-scheduler 的 bug
 
 可能是低版本 `kube-scheduler` 的 bug, 可以升级下调度器版本。
 
-## kube-scheduler 没有正常运行
+### kube-scheduler 没有正常运行
 
 检查 maser 上的 `kube-scheduler` 是否运行正常，异常的话可以尝试重启临时恢复。
 
-## 驱逐后其它可用节点与当前节点有状态应用不在同一个可用区
+### 驱逐后其它可用节点与当前节点有状态应用不在同一个可用区
 
 有时候服务部署成功运行过，但在某个时候节点突然挂了，此时就会触发驱逐，创建新的副本调度到其它节点上，对于已经挂载了磁盘的 Pod，它通常需要被调度到跟当前节点和磁盘在同一个可用区，如果集群中同一个可用区的节点不满足调度条件，即使其它可用区节点各种条件都满足，但不跟当前节点在同一个可用区，也是不会调度的。为什么需要限制挂载了磁盘的 Pod 不能漂移到其它可用区的节点？试想一下，云上的磁盘虽然可以被动态挂载到不同机器，但也只是相对同一个数据中心，通常不允许跨数据中心挂载磁盘设备，因为网络时延会极大的降低 IO 速率。
 
-# Pod 处于 CrashLoopBackOff 状态
+## Pod 处于 CrashLoopBackOff 状态
 
 Pod 如果处于 `CrashLoopBackOff` 状态说明之前是启动了，只是又异常退出了，只要 Pod 的 [restartPolicy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy) 不是 Never 就可能被重启拉起，此时 Pod 的 `RestartCounts` 通常是大于 0 的，可以先看下容器进程的退出状态码来缩小问题范围，参考 [分析 ExitCode 定位 Pod 异常退出原因](https://imroc.cc/k8s/troubleshooting/analysis-exitcode/)
 
-## 容器进程主动退出
+### 容器进程主动退出
 
 如果是容器进程主动退出，退出状态码一般在 0-128 之间，除了可能是业务程序 BUG，还有其它许多可能原因。
 
-## 系统 OOM
+### 系统 OOM
 
 如果发生系统 OOM，可以看到 Pod 中容器退出状态码是 137，表示被 `SIGKILL` 信号杀死，同时内核会报错: `Out of memory: Kill process ...`。大概率是节点上部署了其它非 K8S 管理的进程消耗了比较多的内存，或者 kubelet 的 `--kube-reserved` 和 `--system-reserved` 配的比较小，没有预留足够的空间给其它非容器进程，节点上所有 Pod 的实际内存占用总量不会超过 `/sys/fs/cgroup/memory/kubepods` 这里 cgroup 的限制，这个限制等于 `capacity - "kube-reserved" - "system-reserved"`，如果预留空间设置合理，节点上其它非容器进程（kubelet, dockerd, kube-proxy, sshd 等) 内存占用没有超过 kubelet 配置的预留空间是不会发生系统 OOM 的，可以根据实际需求做合理的调整。
 
-## cgroup OOM
+### cgroup OOM
 
 如果是 cgrou OOM 杀掉的进程，从 Pod 事件的下 `Reason` 可以看到是 `OOMKilled`，说明容器实际占用的内存超过 limit 了，同时内核日志会报: `Memory cgroup out of memory`。 可以根据需求调整下 limit。
 
-## 节点内存碎片化
+### 节点内存碎片化
 
 如果节点上内存碎片化严重，缺少大页内存，会导致即使总的剩余内存较多，但还是会申请内存失败，参考 [内存碎片化](https://imroc.cc/k8s/troubleshooting/memory-fragmentation/)
 
-## 健康检查失败
+### 健康检查失败
 
 参考 [Pod 健康检查失败](https://imroc.cc/k8s/troubleshooting/healthcheck-failed/) 进一步定位。
