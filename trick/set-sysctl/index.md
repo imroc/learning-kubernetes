@@ -26,7 +26,7 @@ spec:
     - name: net.core.somaxconn
       value: "1024"
   ...
-```faq/public-service-or-ingress-connect-failed/
+```
 
 不过使用该方法，默认情况下有些认为是 unsafe 的参数是不能改的，需要将其配到 kubelet 的 `--allowed-unsafe-sysctls` 中才可以用。
 
