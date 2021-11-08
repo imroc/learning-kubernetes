@@ -5,7 +5,7 @@ type: book
 
 ## cpu 被限制了 (throttled)
 
-如果 Pod 使用的 CPU 超过了 limit，会触发 cgroup 的 CPU throttle，限制 Pod 使用 CPU，自然也就可能导致服务超时 (进程分配的 CPU 时间片少了，处理就变慢了，就容易发生超时)。
+如果 Pod 使用的 CPU 超过了 limit，或者容器内线程数太多，发生 CPU 争抢，会触发 cgroup 的 CPU throttle，限制 Pod 使用 CPU，自然也就可能导致服务超时 (进程分配的 CPU 时间片少了，处理就变慢了，就容易发生超时)。
 
 如果确认？可以查 Promehtues 监控，PromQL 查询语句:
 
@@ -25,6 +25,7 @@ sum by (namespace, pod)(
     irate(container_cpu_cfs_throttled_periods_total{container!="POD", container!="", cluster="$cluster"}[5m])
 )
 ```
+
 
 ## 节点高负载
 
