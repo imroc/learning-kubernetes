@@ -26,6 +26,9 @@ sum by (namespace, pod)(
 )
 ```
 
+如何确认超时就是 CPU throttle 导致的呢？建议：
+1. 看下 throttle 严不严重，如果只有少了 throttle，可能不会导致超时。
+2. 拉长监控图时间范围，对比开始超时的时间段与之前正常的时间段，是否都有 throttle，如果是有 throttle 或加重很多后才超时，那很可能是因为 throttle 导致的超时。
 
 ## 节点高负载
 
