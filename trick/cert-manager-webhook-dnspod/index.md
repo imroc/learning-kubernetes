@@ -9,15 +9,15 @@ weight: 40
 
 如果你的域名使用 [DNSPod](https://docs.dnspod.cn/) 管理，想在 Kubernetes 上为域名自动签发免费证书，可以使用 cert-manager 来实现。
 
-cert-manager 支持许多 dns provider，但不支持国内的 dnspod，不过 cert-manager 提供了 [Webhook](https://cert-manager.io/docs/concepts/webhook/) 机制来扩展 provider，社区也有 dnspod 的 provider 实现。本文将介绍如何结合 cert-manager 与 [cert-manager-webhook-dnspod](https://github.com/qqshfox/cert-manager-webhook-dnspod) 来实现为 dnspod 上的域名自动签发免费证书。
+cert-manager 支持许多 dns provider，但不支持国内的 dnspod，不过 cert-manager 提供了 [Webhook](https://cert-manager.io/docs/concepts/webhook/) 机制来扩展 provider，社区也有 dnspod 的 provider 实现。本文将介绍如何结合 cert-manager 与 [cert-manager-webhook-dnspod](https://github.com/imroc/cert-manager-webhook-dnspod) 来实现为 dnspod 上的域名自动签发免费证书。
 
 ## 基础知识
 
 推荐先阅读  [使用 cert-manager 签发免费证书](https://imroc.cc/k8s/trick/sign-free-certs-with-cert-manager/) 。
 
-## 创建 DNSPod 密钥
+## 创建腾讯云 API 密钥
 
-在 DNSPod 控制台，在 [密钥管理](https://console.dnspod.cn/account/token) 中创建密钥，然后复制自动生成的 `ID` 和 `Token` 并保存下来，以备后面的步骤使用。
+登录腾讯云控制台，在 [API密钥管理](https://console.cloud.tencent.com/cam/capi) 中新建密钥，然后复制自动生成的 `SecretId` 和 `SecretKey` 并保存下来，以备后面的步骤使用。
 
 ## 安装 cert-manager-webhook-dnspod
 
@@ -26,24 +26,24 @@ cert-manager 支持许多 dns provider，但不支持国内的 dnspod，不过 c
 首先准备下 helm 配置文件 (`dnspod-webhook-values.yaml`):
 
 ```yaml
-groupName: example.your.domain # 写一个标识 group 的名称，可以任意写
-
-secrets: # 将前面生成的 id 和 token 粘贴到下面
-  apiID: "<ID>"
-  apiToken: "<Token>"
-
 clusterIssuer:
-  enabled: true # 自动创建出一个 ClusterIssuer
-  email: your@email.com # 填写你的邮箱地址
+  enabled: true
+  name: dnspod # 自动创建的 ClusterIssuer 名称
+  ttl: 600
+  staging: false
+  secretId: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' # 替换成你的 SecretId
+  secretKey: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' # 替换成你的 SecretKey
+  email: roc@imroc.cc # 用于接收证书过期的邮件告警。如果cert-manager和webhook都正常工作，证书会自动续期不会过期
+
 ```
 
-> 完整配置见 [values.yaml](https://github.com/qqshfox/cert-manager-webhook-dnspod/blob/master/deploy/cert-manager-webhook-dnspod/values.yaml)
+> 完整配置见 [values.yaml](https://github.com/imroc/cert-manager-webhook-dnspod/blob/master/deploy/cert-manager-webhook-dnspod/values.yaml)
 
 然后使用 helm 进行安装:
 
 ```bash
-git clone --depth 1 https://github.com/qqshfox/cert-manager-webhook-dnspod.git
-helm upgrade --install -n cert-manager -f dnspod-webhook-values.yaml cert-manager-webhook-dnspod ./cert-manager-webhook-dnspod/deploy/cert-manager-webhook-dnspod
+helm repo add roc https://charts.imroc.cc
+helm upgrade --install -f dnspod-webhook-values.yaml cert-manager-webhook-dnspod roc/cert-manager-webhook-dnspod -n cert-manager
 ```
 
 ## 创建证书
@@ -54,31 +54,31 @@ helm upgrade --install -n cert-manager -f dnspod-webhook-values.yaml cert-manage
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: example-com-crt
+  name: example-crt
   namespace: istio-system
 spec:
-  secretName: example-com-crt-secret # 证书保存在这个 secret 中
+  secretName: example-crt-secret # 证书保存在这个 secret 中
   issuerRef:
-    name: cert-manager-webhook-dnspod-cluster-issuer # 这里使用自动生成出来的 ClusterIssuer
+    name: dnspod # 这里使用自动生成出来的 ClusterIssuer
     kind: ClusterIssuer
     group: cert-manager.io
-  dnsNames: # 填入需要签发证书的域名列表，确保域名是使用 dnspod 管理的
-  - example.com
-  - test.example.com
+  dnsNames: # 填入需要签发证书的域名列表，支持泛域名，确保域名是使用 dnspod 管理的
+  - "example.com"
+  - "*.example.com"
 ```
 
 等待状态变成 Ready 表示签发成功:
 
 ```bash
 $ kubectl -n istio-system get certificates.cert-manager.io
-NAME              READY   SECRET                   AGE
-example-com-crt   True    example-com-crt-secret   25d
+NAME          READY   SECRET               AGE
+example-crt   True    example-crt-secret   25d
 ```
 
 若签发失败可 describe 一下看下原因:
 
 ```bash
-kubectl -n istio-system describe certificates.cert-manager.io example-com-crt
+kubectl -n istio-system describe certificates.cert-manager.io example-crt
 ```
 
 ## 使用证书
@@ -106,7 +106,7 @@ spec:
   tls:
     hosts:
     - test.example.com
-    secretName: example-com-crt-secret # 引用证书 secret
+    secretName: example-crt-secret # 引用证书 secret
 ```
 
 在 istio 的 ingressgateway 中使用:
@@ -128,7 +128,7 @@ spec:
       protocol: HTTP
     hosts:
     - example.com
-    - test.example.com
+    - "*.example.com"
     tls:
       httpsRedirect: true # http 重定向 https (强制 https)
   - port:
@@ -137,10 +137,10 @@ spec:
       protocol: HTTPS
     hosts:
     - example.com
-    - test.example.com
+    - "*.example.com"
     tls:
       mode: SIMPLE
-      credentialName: example-com-crt-secret # 引用证书 secret
+      credentialName: example-crt-secret # 引用证书 secret
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
