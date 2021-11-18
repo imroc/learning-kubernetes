@@ -11,9 +11,21 @@ weight: 5
 
 ```txt
 sum by (pod, container)(
-  container_memory_usage_bytes{container!~"POD|sandbox|", image!="", cluster="cls-5azxheei", namespace="prod", pod=~"nginx-.+"}
+  container_memory_usage_bytes{container!~"POD|sandbox|", image!="", cluster="$cluster", namespace="$namespace", pod=~"nginx-.+"}
 ) /
 sum by (pod, container)(
-  kube_pod_container_resource_limits_memory_bytes{cluster="cls-5azxheei", namespace="prod", pod=~"nginx-.+"}
+  kube_pod_container_resource_limits_memory_bytes{cluster="$cluster", namespace="$namespace", pod=~"nginx-.+"}
+)
+```
+
+
+## 查看 CPU 限流比例
+
+```txt
+sum by (namespace, pod)(
+    irate(container_cpu_cfs_throttled_periods_total{container!~"POD|sandbox|", cluster="$cluster", namespace=~"$namespace", pod=~"nginx-.+"}[5m])
+) /
+sum by (namespace, pod)(
+    irate(container_cpu_cfs_periods_total{container!~"POD|sandbox|", cluster="$cluster", namespace=~"$namespace", pod=~"nginx-.+"}[5m])
 )
 ```
