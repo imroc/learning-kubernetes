@@ -11,7 +11,7 @@ weight: 5
 
 ```txt
 sum by (pod, container)(
-  container_memory_usage_bytes{image!="", cluster="cls-5azxheei", namespace="prod", pod=~"nginx-.+"}
+  container_memory_usage_bytes{container!~"POD|sandbox|", image!="", cluster="cls-5azxheei", namespace="prod", pod=~"nginx-.+"}
 ) /
 sum by (pod, container)(
   kube_pod_container_resource_limits_memory_bytes{cluster="cls-5azxheei", namespace="prod", pod=~"nginx-.+"}
