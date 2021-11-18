@@ -2,6 +2,7 @@
 title: "实用 PromQL"
 type: book
 date: "2021-11-18"
+weight: 5
 ---
 
 ## 查看内存占 limit 比例
