@@ -12,7 +12,7 @@ date: "2021-11-22"
 
 1. 查看 `container_cpu_usage_seconds_total` 监控，CPU 飙升，逼近 limit。
 2. 查看 `container_cpu_cfs_throttled_periods_total` 监控，CPU 飙升伴随 CPU Throttle 飙升，所以服务异常应该是 CPU 被限流导致。
-3. 查看 `container_cpu_system_seconds_total` 监控，发现 CPU 飙升主要是 CPU system 占用导致。
+3. 查看 `container_cpu_system_seconds_total` 监控，发现 CPU 飙升主要是 CPU system 占用导致，容器内 `pidstat -u -t 5 1` 可以看到进程 `%system` 占用分布情况。
 4. `perf top` 看 system 占用高主要是 `vfs_write` 写数据导致。
 
     ![](1.png)
