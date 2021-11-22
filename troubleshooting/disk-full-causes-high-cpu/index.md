@@ -1,5 +1,5 @@
 ---
-title: 磁盘满导致 CPU 高
+title: Pod 磁盘满导致 CPU 高
 type: book
 date: "2021-11-22"
 ---
