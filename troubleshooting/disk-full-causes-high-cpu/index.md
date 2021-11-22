@@ -14,16 +14,24 @@ date: "2021-11-22"
 2. 查看 `container_cpu_cfs_throttled_periods_total` 监控，CPU 飙升伴随 CPU Throttle 飙升，所以服务异常应该是 CPU 被限流导致。
 3. 查看 `container_cpu_system_seconds_total` 监控，发现 CPU 飙升主要是 CPU system 占用导致。
 4. `perf top` 看 system 占用高主要是 `vfs_write` 写数据导致
+
 ![](1.png)
+
 5. `iostat -xhd 2` 看 IO 并不高，磁盘利用率也不高，io wait 也不高。
 6. `sync_inodes_sb` 看起来是写数据时触发了磁盘同步的耗时逻辑
 7. 深入看内核代码，当磁盘满的时候会调用 flush 刷磁盘所有数据，这个会一直在内核态运行很久，相当于对这个文件系统做 sync。
+
 ![](2.png)
+
 8. 节点上 `df -h` 看并没有磁盘满。
 9. 容器内 `df -h` 看根目录空间满了. 
+
 ![](3.png)
+
 10. 看到 docker `daemon.json` 配置，限制了容器内 rootfs 最大只能占用 200G
+
 ![](4.png)
+
 11. 容器内一级级的 `du -sh *` 排查发现主要是一个 `nohup.log` 文件占满了磁盘。
 
 
