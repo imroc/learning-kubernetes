@@ -1,12 +1,12 @@
 ---
-title: 安装 Karmada 控制面
+title: 安装 Karmada
 type: book
 weight: 10
 ---
 
 ## 概述
 
-本文记录如何将 Karmada 控制面部署到 K8S 集群里 (host 集群)。推荐安装到 `karmada-system` 命名空间下， 务必提前创建好命名空间:
+本文记录如何将 Karmada 部署到 K8S 集群里 (host 集群)。推荐安装到 `karmada-system` 命名空间下， 务必提前创建好命名空间:
 
 ```bash
 kubectl create ns karmada-system
