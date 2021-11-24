@@ -222,3 +222,80 @@ agent:
 ```bash
 helm -n karmada-system upgrade --install -f values.yaml karmada roc/karmada
 ```
+
+## 暴露 karmada-apiserver
+
+karmada 部署好后，我们最好将它的 apiserver 给暴露出来，这样我们就可以在本地使用 kubectl 操作 karmada 了。
+
+最简单的暴露方式就是直接修改 `karmada-apiserver` service 的 type 为 LoadBalancer，自动创建的 LB，使用 LB 暴露出来。
+
+我这里使用 istio 的 ingressgateway 暴露，示例:
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: karmada
+  namespace: karmada-system
+spec:
+  selector:
+    app: istio-ingressgateway
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 5443
+      name: Karmada
+      protocol: TCP
+    hosts:
+    - 'karmada.imroc.cc'
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: karmada-apiserver
+  namespace: karmada-system
+spec:
+  hosts:
+  - "karmada.imroc.cc"
+  gateways:
+  - karmada
+  tcp:
+  - route:
+    - destination:
+        host: karmada-apiserver
+        port:
+          number: 5443
+```
+
+
+## 获取 karmada kubeconfig
+
+karmada 部署好后会将 kubeconfig 保存到 secret 中，我们将其导出来:
+
+```bash
+kubectl -n karmada-system get secret karmada-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > karmada
+```
+
+修改一下 server 地址为暴露出来后实际可以访问的地址; 通常还可能有证书校验问题，我们可以将 cluster 中的 `certificate-authority-data` 字段删掉，并加上 `insecure-skip-tls-verify: false`，就可以忽略证书校验。
+
+最后，可以使用 [kubecm](https://imroc.cc/k8s/trick/kubecm/) 将其合并到我们默认使用的 kubeconfig 中:
+
+```bash
+kubecm add -f karmada
+```
+
+然后我们就可以直接使用本地 kubectl 操作 karmada 了:
+
+```bash
+$ kubectl ctx karmada
+Switched to context "karmada".
+$ kubectl get ns
+NAME              STATUS   AGE
+default           Active   4d12h
+karmada-cluster   Active   4d12h
+karmada-system    Active   4d12h
+kube-node-lease   Active   4d12h
+kube-public       Active   4d12h
+kube-system       Active   4d12h
+```
