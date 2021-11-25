@@ -37,7 +37,7 @@ clusterIssuer:
 
 ```
 
-> 完整配置见 [values.yaml](https://github.com/imroc/cert-manager-webhook-dnspod/blob/master/deploy/cert-manager-webhook-dnspod/values.yaml)
+> 完整配置见 [values.yaml](https://github.com/imroc/cert-manager-webhook-dnspod/blob/master/charts/values.yaml)
 
 然后使用 helm 进行安装:
 
