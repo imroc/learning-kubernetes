@@ -182,6 +182,22 @@ helm show values roc/karmada > karmada-fullvalues.yaml
 我们只需要设置需要的一些配置项，准备 `values.yaml`:
 ```yaml
 installMode: "host"
+certs:
+  mode: auto
+  auto:
+    expiry: 43800h
+    hosts: [ # 罗列 karmada 控制面可能会被访问的域名，这些会被放入 karmada-apiserver 的证书中，kubectl 或 agent 访问 karmada 控制面时需要校验证书
+        "*.imroc.cc",
+        "kubernetes",
+        "kubernetes.default",
+        "kubernetes.default.svc",
+        "kubernetes.default.svc.cluster.local",
+        "*.karmada-system",
+        "*.karmada-system.svc",
+        "*.karmada-system.svc.cluster.local",
+        "localhost",
+        "127.0.0.1"
+    ]
 etcd:
   mode: "external" # 使用我们自己部署的 etcd
   external:
@@ -210,9 +226,6 @@ controllerManager:
   image:
     pullPolicy: Always
 schedulerEstimator:
-  image:
-    pullPolicy: Always
-agent:
   image:
     pullPolicy: Always
 ```
@@ -277,7 +290,7 @@ karmada 部署好后会将 kubeconfig 保存到 secret 中，我们将其导出�
 kubectl -n karmada-system get secret karmada-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > karmada
 ```
 
-修改一下 server 地址为暴露出来后实际可以访问的地址; 通常还可能有证书校验问题，我们可以将 cluster 中的 `certificate-authority-data` 字段删掉，并加上 `insecure-skip-tls-verify: false`，就可以忽略证书校验。
+修改一下 server 地址为暴露出来后实际可以访问的地址; 如果有证书校验问题，我们可以将 cluster 中的 `certificate-authority-data` 字段删掉，并加上 `insecure-skip-tls-verify: false`，就可以忽略证书校验。
 
 最后，可以使用 [kubecm](https://imroc.cc/k8s/trick/kubecm/) 将其合并到我们默认使用的 kubeconfig 中:
 
