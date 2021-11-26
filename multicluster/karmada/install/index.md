@@ -299,3 +299,27 @@ kube-node-lease   Active   4d12h
 kube-public       Active   4d12h
 kube-system       Active   4d12h
 ```
+
+## 安装 kubectl-karmada
+
+Karmada 提供了 kubectl 插件，可以使用 [krew](https://krew.sigs.k8s.io/) 安装:
+
+```bash
+kubectl krew install karmada
+```
+
+krew 更新可能没那么及时，要安装最新版也可以直接源码编译安装:
+
+```bash
+git clone https://github.com/karmada-io/karmada.git
+cd cmd/kubectl-karmada
+go install
+```
+
+实际也可以完全不作为 kubectl 插件用，直接安装独立的命令 karmadactl:
+
+```bash
+git clone https://github.com/karmada-io/karmada.git
+cd cmd/karmadactl
+go install
+```
