@@ -32,20 +32,8 @@ Karmada 的成员集群支持 push 和 pull 两种模式：
 ```yaml
 installMode: "agent"
 
-scheduler:
-  image:
-    pullPolicy: Always
-webhook:
-  image:
-    pullPolicy: Always
-controllerManager:
-  image:
-    pullPolicy: Always
-schedulerEstimator:
-  image:
-    pullPolicy: Always
 agent:
-  image:
+  image: # 默认是 IfNotPresent，tag 又是 latest，这里改成 Always 方便重建 pod 即可升级 karmada 组件
     pullPolicy: Always
   clusterName: "prod"
   kubeconfig:  # 从 karmada 的 kubeconfig 中提取相关证书与密钥
