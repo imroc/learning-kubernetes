@@ -59,6 +59,17 @@ kubectl create ns karmada-system
 helm -n karmada-system upgrade --install -f values.yaml karmada-agent roc/karmada
 ```
 
+## 查看已注册的集群
+
+kubeconfig 的 context 切换到 karmada 控制面，通过 `kubectl get cluster` 可获取已注册的集群列表:
+
+```bash
+$ kubectl get cluster
+NAME   VERSION                      MODE   READY   AGE
+cd     v1.18.4-tke.15               Push   True    5d17h
+eks    v1.18.4-tke.14-eks.1-dirty   Push   True    4d23h
+```
+
 ## 如何选择？
 
 我建议尽量使用 push 模式，相比 pull 模式的优势:
