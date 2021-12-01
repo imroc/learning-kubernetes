@@ -26,7 +26,7 @@ LivenessProbe 失败会重启 Pod，不要轻易使用，除非你了解后果�
 
 通常是:
 1. failureThreshold 设置得更大一点，避免因探测太敏感导致 Pod 很容易被重启。
-2. initialDelaySeconds 加大一点，避免 Pod 因启动慢被无限重启。
+2. 等待应用完全启动后才开始探测，如果你的 K8S 版本低于 1.18，可以将 LivenessProbe 的 initialDelaySeconds 加大一点，避免 Pod 因启动慢被无限重启；如果是 1.18 及其以上版本，可以配置 [StartProbe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes)，保证等应用完全启动后才开始探测。
 
 ## LivenessProbe 探测逻辑里不要有外部依赖
 
