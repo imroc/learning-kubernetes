@@ -4,6 +4,10 @@ type: book
 date: "2021-11-30"
 ---
 
+## 概述
+
+本文分享 K8S 健康检查配置的最佳实践，文末也分享配置不当的案例。
+
 ## 所有提供服务的 container 都要加上 ReadinessProbe
 
 如果你的容器对外提供了服务，监听了端口，那么都应该配上 ReadinessProbe，ReadinessProbe 不通过就视为 Pod 不健康，然后会自动将不健康的 Pod 踢出去，避免将业务流量转发给异常 Pod。
