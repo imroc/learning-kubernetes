@@ -18,6 +18,20 @@ kubectl -n kube-system scale --replicas=10 deployment/coredns
 2. 为 coredns 定义 HPA 自动扩缩容。
 3. 安装 [cluster-proportional-autoscaler](https://github.com/kubernetes-sigs/cluster-proportional-autoscaler) 以实现更精确的扩缩容(推荐)。
 
+## 禁用 ipv6
+
+如果 K8S 节点没有禁用 IPV6 的话，容器内进程请求 coredns 时的默认行为是同时发起 IPV4 和 IPV6 解析，而通常我们只需要用到 IPV4，当容器请求某个域名时，coredns 解析不到 IPV6 记录，就会 forward 到 upstream 去解析，如果到 upstream 需要经过较长时间(比如跨公网，跨机房专线)，就会拖慢整个解析流程的速度，业务层面就会感知 DNS 解析慢。
+
+CoreDNS 有一个 [template](https://coredns.io/plugins/template/) 的插件，可以用它来禁用 IPV6 的解析，只需要给 CoreDNS 加上如下的配置:
+
+```txt
+template ANY AAAA {
+    rcode NXDOMAIN
+}
+```
+
+> 这个配置的含义是：给所有 IPV6 的解析请求都响应空记录，即无此域名的 IPV6 记录。
+
 ## 优化 ndots
 
 默认情况下，Kubernetes 集群中的域名解析往往需要经过多次请求才能解析到。查看 pod 内 的 `/etc/resolv.conf` 可以知道 `ndots` 选项默认为 5:
