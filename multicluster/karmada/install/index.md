@@ -282,9 +282,9 @@ spec:
 ```
 
 
-## 获取 karmada kubeconfig
+## 获取 karmada 控制面 kubeconfig
 
-karmada 部署好后会将 kubeconfig 保存到 secret 中，我们将其导出来:
+karmada 部署好后会将控制面的 kubeconfig 保存到 host 集群的 secret 中，我们将其导出来:
 
 ```bash
 kubectl -n karmada-system get secret karmada-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > karmada

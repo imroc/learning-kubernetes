@@ -2,7 +2,6 @@
 title: 部署应用
 type: book
 weight: 30
-draft: true
 ---
 
 ## 准备应用 yaml
@@ -59,4 +58,10 @@ spec:
 
 > `clusterNames` 指定工作负载需要被部署到的集群
 
-在 
+将 yaml 应用到 karmada 控制面中:
+
+```bash
+kubectl -n test-nginx apply -f policy.yaml
+```
+
+查看部署
