@@ -1,5 +1,5 @@
 ---
-title: "Namespace 一直 Terminating"
+title: "为什么 Namespace 一直 Terminating ?"
 type: book
 date: "2021-12-2"
 ---
