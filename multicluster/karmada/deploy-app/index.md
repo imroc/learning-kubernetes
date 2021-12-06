@@ -64,4 +64,16 @@ spec:
 kubectl -n test-nginx apply -f policy.yaml
 ```
 
-查看部署
+查看部署结果:
+
+```bash
+$ kubectl karmada get deployments.v1.apps -n test-nginx
+NAME    CLUSTER   READY   UP-TO-DATE   AVAILABLE   AGE   ADOPTION
+nginx   cd        1/1     1            1           10d   Y
+nginx   eks       1/1     1            1           59s   Y
+
+$ kubectl karmada get pod -n test-nginx
+NAME                     CLUSTER   READY   STATUS    RESTARTS   AGE
+nginx-5c444bd7f6-qgz7k   eks       1/1     Running   0          109s
+nginx-5c444bd7f6-cd557   cd        1/1     Running   0          10d
+```
