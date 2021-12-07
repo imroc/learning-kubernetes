@@ -9,7 +9,7 @@ type: book
 
 ## 安装 systemd
 
-如果你用的基础镜像是 centos，那么已经内置了 systemd，建议使用 `centos:8`，启动入口是 `/sbin/init`；如果是 ubuntu，那么需要安装一下 systemd，启动入口是 `/usr/sbin/systemd`，Dockerfile` 示例:
+如果你用的基础镜像是 centos，那么已经内置了 systemd，建议使用 `centos:8`，启动入口是 `/sbin/init`；如果是 ubuntu，那么需要安装一下 systemd，启动入口是 `/usr/sbin/systemd`，Dockerfile 示例:
 
 ```dockerfile
 FROM ubuntu:22.04
