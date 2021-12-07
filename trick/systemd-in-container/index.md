@@ -21,7 +21,7 @@ RUN apt install -y systemd
 
 systemd 相比业务进程比较特殊，它运行起来需要以下条件:
 1. 自己必须是 1 号进程，所以不能启用 `shareProcessNamespace`。
-2. 需要对挂载 `/run` 和 `/sys/fs/cgroup` 等路径进行挂载，通常需要给到 systemd 容器一定特权。
+2. 需要对 `/run` 和 `/sys/fs/cgroup` 等路径进行挂载，通常需要给到 systemd 容器一定特权。
 
 最简单的方式是将运行 systemd 的 container 设为特权容器，示例:
 
