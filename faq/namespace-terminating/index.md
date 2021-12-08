@@ -8,7 +8,7 @@ date: "2021-12-2"
 
 本文分享 namespace 一直卡在 terminating 状态的可能原因与解决方法。
 
-## Namespace 上存在 Finalizers
+## Namespace 上存在 Finalizers 且对应软件已卸载
 
 删除 ns 后，一直卡在 Terminating 状态。通常是存在 finalizers，通过 `kubectl get ns xxx -o yaml` 可以看到是否有 finalizers:
 
@@ -50,6 +50,48 @@ curl -H "Content-Type: application/json" -XPUT -d '{"apiVersion":"v1","kind":"Na
 参考资料:
 
 * Node Lease 的 Proposal: https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/0009-node-heartbeat.md
+
+## Namespace 中残留的资源存在 Finalizers 且相应软件已卸载
+
+查看 namespace yaml:
+
+```bash
+$ kubectl get ns istio-system -o yaml
+...
+status:
+  conditions:
+  - lastTransitionTime: "2021-12-07T05:07:14Z"
+    message: 'Some resources are remaining: kialis.kiali.io has 1 resource instances'
+    reason: SomeResourcesRemain
+    status: "True"
+    type: NamespaceContentRemaining
+  - lastTransitionTime: "2021-12-07T05:07:14Z"
+    message: 'Some content in the namespace has finalizers remaining: kiali.io/finalizer
+      in 1 resource instances'
+    reason: SomeFinalizersRemain
+    status: "True"
+    type: NamespaceFinalizersRemaining
+  phase: Terminating
+```
+
+可以看到 `SomeResourcesRemain` 和 `SomeFinalizersRemain`，对应资源类型是 `kialis.kiali.io`，可以获取看一下:
+
+```bash
+$ kubectl -n istio-system get kialis.kiali.io
+NAME    AGE
+kiali   5d23h
+```
+
+这个例子明显看是安装过 kiali，且有 kiali 残留的 crd 资源，但 kiali 已卸载。
+清理 namespace 时清理 kiali 资源时，发现资源上存在 finilizer，需等待 kiali 本身进一步清理，由于 kiali 已卸载就无法清理，导致一直在等待。
+
+这个时候我们可以手动删下资源上的 finalizer 即可:
+
+```bash
+kubectl -n istio-system edit kialis.kiali.io kiali
+```
+
+![](1.png)
 
 ## metrics server 被删除
 
