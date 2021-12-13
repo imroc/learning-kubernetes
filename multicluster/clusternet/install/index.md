@@ -114,3 +114,16 @@ $ kubectl get mcls -o wide -A
 NAMESPACE          NAME                       CLUSTER ID                             CLUSTER TYPE   SYNC MODE   KUBERNETES       READYZ   AGE
 clusternet-ml6wg   clusternet-cluster-rjnxh   6c085c18-3baf-443c-abff-459751f5e3d3   EdgeCluster    Dual        v1.18.4-tke.16   true     9m25s
 ```
+
+## 安装 kubectl-clusternet
+
+我们还可以安装下 clusternet 的 kubectl 插件，方便跟 clusternet 交互:
+
+```bash
+$ kubectl krew update
+$ kubectl krew install clusternet
+# check plugin version
+$ kubectl clusternet version
+```
+
+> 前提是已安装了 [Krew](https://github.com/kubernetes-sigs/krew) (kubectl 包管理器)，若没安装，可以参考 [这里](https://krew.sigs.k8s.io/docs/user-guide/setup/install/)。
