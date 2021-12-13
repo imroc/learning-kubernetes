@@ -1,5 +1,5 @@
 ---
-title: 部署应用
+title: 部署多集群应用
 type: book
 weight: 30
 ---
