@@ -93,6 +93,24 @@ kubectl apply -f bootstrap-token-secret.yaml
 helm show values clusternet/clusternet-agent > clusternet-agent-values.yaml
 ```
 
+安装 clusternet-agent 时建议自定义一下要注册上去的集群名称，填写有意义的字符串作为集群名称(默认是自动生成一串无意义的字符)，方便后续部署分发应用时有较好的可读性，也利于集群管理。
+
+自定义的方式是修改配置，`extraArgs` 里定义一下 `cluster-reg-name` 参数，例如:
+
+```yaml
+extraArgs:
+  cluster-reg-name: 'bj-prod'
+```
+
+> 更多自定义参数可自行参考 `clusternet-agent` 的 `--help`。
+
+最后进行安装:
+
+```bash
+helm upgrade --install clusternet-agent -n clusternet-system --create-namespace -f clusternet-agent-values.yaml clusternet/clusternet-agent
+```
+  > 若后续要卸载，可执行 `helm uninstall clusternet-agent -n clusternet-system`
+
 ## 检查集群注册情况
 
 clusternet-agent 安装好后，如果没有差错，会自动将当前子集群注册到父集群，可以将 context 切到父集群中检查下注册情况:
