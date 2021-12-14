@@ -93,16 +93,20 @@ kubectl apply -f bootstrap-token-secret.yaml
 helm show values clusternet/clusternet-agent > clusternet-agent-values.yaml
 ```
 
-安装 clusternet-agent 时建议自定义一下要注册上去的集群名称，填写有意义的字符串作为集群名称(默认是自动生成一串无意义的字符)，方便后续部署分发应用时有较好的可读性，也利于集群管理。
+需要修改的几个关键配置:
 
-自定义的方式是修改配置，`extraArgs` 里定义一下 `cluster-reg-name` 参数，例如:
+* `parentURL` 表示父集群 apiserver 的连接地址，子集群中的 agent 会通过这个地址连接父集群。如果 agent 装到父集群中，即父集群本身也作为一个子集群，这时地址可以填 `https://kubernetes.default.svc.cluster.local`。
+* `registrationToken` 使用前面创建的 secret 中的 token，格式是 `token-id` 与 `token-secret` 通过 `.` 拼接起来。
+* 安装 clusternet-agent 时建议自定义一下要注册上去的集群名称，填写有意义的字符串作为集群名称(默认是自动生成一串无意义的字符)，方便后续部署分发应用时有较好的可读性，也利于集群管理。自定义的方式是修改配置，`extraArgs` 里定义一下 `cluster-reg-name` 参数，更多自定义参数可自行参考 `clusternet-agent` 的 `--help`。
+
+配置示例:
 
 ```yaml
+parentURL: "https://cls-5u7as9hd.ccs.tencent-cloud.com"
+registrationToken: "07401b.f395accd246ae52d"
 extraArgs:
   cluster-reg-name: 'bj-prod'
 ```
-
-> 更多自定义参数可自行参考 `clusternet-agent` 的 `--help`。
 
 最后进行安装:
 
