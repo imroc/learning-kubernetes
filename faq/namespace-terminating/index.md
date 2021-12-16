@@ -105,3 +105,17 @@ $ kubectl get apiservice
 v1beta1.metrics.k8s.io                 monitoring/prometheus-adapter     False (ServiceNotFound)   75d
 ...
 ```
+
+
+## 强删 namespace 方法
+
+有时候实在找不到原因，也可以强删 namespace，以下是强删方法:
+
+```bash
+NAMESPACE=delete-me
+kubectl get ns $NAMESPACE -o json | jq '.spec.finalizers=[]' > ns.json
+kubectl proxy --port=8899 &
+PID=$!
+curl -X PUT http://localhost:8899/api/v1/namespaces/$NAMESPACE/finalize -H "Content-Type: application/json" --data-binary @ns.json
+kill $PID
+```
