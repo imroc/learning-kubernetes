@@ -18,7 +18,7 @@ Normal  Killing  39s (x735 over 15h)  kubelet, 10.179.80.31  Killing container w
 
 解决方案：清理磁盘空间
 
-### 存在 "i" 文件属性
+## 存在 "i" 文件属性
 
 如果容器的镜像本身或者容器启动后写入的文件存在 "i" 文件属性，此文件就无法被修改删除，而删除 Pod 时会清理容器目录，但里面包含有不可删除的文件，就一直删不了，Pod 状态也将一直保持 Terminating，kubelet 报错:
 
@@ -43,7 +43,7 @@ chattr -i /data/docker/overlay2/b1aea29c590aa9abda79f7cf3976422073fb3652757f0391
 
 执行完后等待 kubelet 自动重试，Pod 就可以被自动删除了。
 
-### docker 17 的 bug
+## docker 17 的 bug
 
 docker hang 住，没有任何响应，看 event:
 
@@ -58,17 +58,17 @@ Warning FailedSync 3m (x408 over 1h) kubelet, 10.179.80.31 error determining sta
 * 升级到docker 18. 该版本使用了新的 containerd，针对很多bug进行了修复。
 * 如果出现terminating状态的话，可以提供让容器专家进行排查，不建议直接强行删除，会可能导致一些业务上问题。
 
-### 存在 Finalizers
+## 存在 Finalizers
 
 k8s 资源的 metadata 里如果存在 `finalizers`，那么该资源一般是由某程序创建的，并且在其创建的资源的 metadata 里的 `finalizers` 加了一个它的标识，这意味着这个资源被删除时需要由创建资源的程序来做删除前的清理，清理完了它需要将标识从该资源的 `finalizers` 中移除，然后才会最终彻底删除资源。比如 Rancher 创建的一些资源就会写入 `finalizers` 标识。
 
 处理建议：`kubectl edit` 手动编辑资源定义，删掉 `finalizers`，这时再看下资源，就会发现已经删掉了
 
-### 低版本 kubelet list-watch 的 bug
+## 低版本 kubelet list-watch 的 bug
 
 之前遇到过使用 v1.8.13 版本的 k8s，kubelet 有时 list-watch 出问题，删除 pod 后 kubelet 没收到事件，导致 kubelet 一直没做删除操作，所以 pod 状态一直是 Terminating
 
-### dockerd 与 containerd 的状态不同步
+## dockerd 与 containerd 的状态不同步
 
 判断 dockerd 与 containerd 某个容器的状态不同步的方法：
 
@@ -97,7 +97,7 @@ Sep 18 10:19:49 VM-1-33-ubuntu dockerd[4822]: time="2019-09-18T10:19:49.90394365
 * 临时恢复: 执行 `docker container prune` 或重启 dockerd
 * 长期方案: 运行时推荐直接使用 containerd，绕过 dockerd 避免 docker 本身的各种 BUG
 
-### Daemonset Controller 的 BUG
+## Daemonset Controller 的 BUG
 
 有个 k8s 的 bug 会导致 daemonset pod 无限 terminating，1.10 和 1.11 版本受影响，原因是 daemonset controller 复用 scheduler 的 predicates 逻辑，里面将 nodeAffinity 的 nodeSelector 数组做了排序（传的指针），spec 就会跟 apiserver 中的不一致，daemonset controller 又会为 rollingUpdate类型计算 hash (会用到spec)，用于版本控制，造成不一致从而无限启动和停止的循环。
 
@@ -106,7 +106,7 @@ Sep 18 10:19:49 VM-1-33-ubuntu dockerd[4822]: time="2019-09-18T10:19:49.90394365
 
 升级集群版本可以彻底解决，临时规避可以给 rollingUpdate 类型 daemonset 不使用 nodeAffinity，改用 nodeSelector。
 
-### mount 的目录被其它进程占用
+## mount 的目录被其它进程占用
 
 dockerd 报错 `device or resource busy`:
 
