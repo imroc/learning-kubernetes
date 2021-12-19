@@ -7,7 +7,7 @@ type: book
 
 ```bash
 # conntrack优化
-net.netfilter.nf_conntrack_tcp_be_liberal = 1 # 容器环境下，开启这个参数可以避免 NAT 过的 TCP 连接 带宽上不去。不开启的现象是有一点时延的 TCP 单流速度慢或经常断连(比如跨地域专线挂载 nfs ，时延 5ms，下载速度就上不去，只能到 12Mbps 左右；又或者是经过公网上传文件经常失败)，原因是 conntrack 会将 out of window 的包置为 INVALID，如果是 INVALID 状态的包，netfilter 不会对其做 IP 和端口的 NAT 转换，这样协议栈再去根据 ip + 端口去找这个包的连接时，就会找不到，这个时候就会回复一个 RST
+net.netfilter.nf_conntrack_tcp_be_liberal = 1 # 容器环境下，开启这个参数可以避免 NAT 过的 TCP 连接 带宽上不去。
 net.netfilter.nf_conntrack_tcp_loose = 1 
 net.netfilter.nf_conntrack_max = 3200000
 net.netfilter.nf_conntrack_buckets = 1600512
