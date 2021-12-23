@@ -37,13 +37,13 @@ net.ipv4.ip_forward="1"
 ## Pod 调参汇总
 
 ```bash
-# socket buffer优化（好像意义不大）
+# socket buffer优化
 net.ipv4.tcp_wmem = 4096        16384   4194304
 net.ipv4.tcp_rmem = 4096        87380   6291456
 net.ipv4.tcp_mem = 381462       508616  762924
 net.core.rmem_default = 8388608
-net.core.rmem_max = 16777216
-net.core.wmem_max = 16777216
+net.core.rmem_max = 26214400 # 读写 buffer 调到 25M 避免大流量时导致 buffer 满而丢包 "netstat -s" 可以看到 receive buffer errors 或 send buffer errors
+net.core.wmem_max = 26214400
  
 # timewait相关优化
 net.ipv4.tcp_max_tw_buckets = 131072 # 这个优化意义不大
