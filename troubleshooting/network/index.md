@@ -1,5 +1,5 @@
 ---
-title: "网络丢包排障"
+title: "网络丢包排查"
 type: book
 weight: 2
 ---
@@ -76,3 +76,7 @@ net.core.somaxconn = 32768 # 调整全连接队列上限
 需要注意的是，`somaxconn` 只是调整了队列最大的上限，但实际队列大小是应用在 `listen` 时传入的 `backlog` 大小，大多编程语言默认会自动读取 `somaxconn` 的值作为 `listen` 系统调用的 `backlog` 参数的大小。
 
 如果是用 nginx，`backlog` 的值需要在 `nginx.conf` 配置中显示指定，否则会用它自己的默认值 `511`。
+
+## 源端口耗尽
+
+当作为 client 发请求，或外部流量从 NodePort 进来时进行 SNAT，会从当前 netns 中选择一个端口作为源端口，端口范围由 `net.ipv4.ip_local_port_range` 这个内核参数决定，如果并发量大，就可能导致源端口耗尽，从而丢包。
