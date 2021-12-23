@@ -1,7 +1,8 @@
 ---
-title: "排查节点高负载"
+title: "节点高负载排查"
 type: book
 date: "2021-07-14"
+weight: 4
 ---
 
 ## 概述
