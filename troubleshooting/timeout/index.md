@@ -1,11 +1,21 @@
 ---
-title: "偶现超时"
+title: "网络超时排查"
 type: book
+weight: 1
 ---
 
-## cpu 被限制了 (throttled)
+## 网络丢包
 
-如果 Pod 使用的 CPU 超过了 limit，或者容器内线程数太多，又或者 CPU 内核态占用过高影响到用户态任务执行，发生 CPU 争抢，会触发 cgroup 的 CPU throttle，限制 Pod 使用 CPU，自然也就可能导致服务超时 (进程分配的 CPU 时间片少了，处理就变慢了，就容易发生超时)。
+参考 [网络丢包排查](https://imroc.cc/k8s/troubleshooting/network/) 。
+
+## cpu 限流 (throttled)
+
+有以下情况 CPU 会被限流:
+1. Pod 使用的 CPU 超过了 limit，会直接被限流。
+2. 容器内同时在 running 状态的进程/线程数太多，内核 CFS 调度周期内无法保证容器所在 cgroup 内所有进程都分到足够的时间片运行，部分进程会被限流。
+3. 内核态 CPU 占用过高也可能会影响到用户态任务执行，触发 cgroup 的 CPU throttle，有些内核态的任务是不可中断的，比如大量创建销毁进程，回收内存等任务，部分核陷入内核态过久，当切回用户态时发现该 CFS 调度周期时间所剩无几，部分进程也无法分到足够时间片从而被限流。
+
+CPU 被限流后进程就运行变慢了，应用层的表现通常就是超时。
 
 如果确认？可以查 Promehtues 监控，PromQL 查询语句:
 
