@@ -61,6 +61,12 @@ net.core.wmem_max = 26214400
 * 如果并发太高或机器负载过高，半连接队列可能会满，新来的 SYN 建连包会被丢包。
 * 如果应用层 accept 连接过慢，会导致全连接队列堆积，满了就会丢包，通常是并发高、机器负载高或应用 hung 死等原因。
 
+确认方法:
+
+```bash
+netstat -s | grep -E 'drop|overflow'
+```
+
 通过以下内核参数可以调整队列大小 (namespace隔离):
 ```bash
 net.ipv4.tcp_max_syn_backlog = 8096 # 调整半连接队列上限
