@@ -40,12 +40,6 @@ sum by (namespace, pod)(
 1. 看下 throttle 严不严重，如果只有少了 throttle，可能不会导致超时。
 2. 拉长监控图时间范围，对比开始超时的时间段与之前正常的时间段，是否都有 throttle，如果是有 throttle 或加重很多后才超时，那很可能是因为 throttle 导致的超时。
 
-## MTU 不一致
-
-如果容器内网卡的 MTU 大于容器外的网卡 (veth 或主网卡)，就可能存在部分容器内发出的包，到节点后发现数据包过大，可能不会像交换机那样严谨会分片，直接就丢掉了； tcp 协商 mss 的时候，主要看的是进程通信两端网卡的 MTU，所以如果容器内网卡的 MTU 大于容器外的网卡，还可能存在数据包到了节点后，发现大小超过了节点网卡的 MTU，直接丢弃了。
-
-MTU 大小可以通过 `ip address show` 或 `ifconfig` 来确认。
-
 ## 节点高负载
 
-如果节点高负载了，进程分配的 CPU 不够用，也会导致进程处理慢，从而超时，详见 [排查节点高负载](https://imroc.cc/k8s/troubleshooting/high-load/)
+如果节点高负载了，即便没 throttle，进程所分配的 CPU 时间片也不够用，也会导致进程处理慢，从而超时，详见 [排查节点高负载](https://imroc.cc/k8s/troubleshooting/high-load/)
