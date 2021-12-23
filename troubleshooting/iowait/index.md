@@ -2,6 +2,7 @@
 title: "IO WAIT 高"
 type: book
 date: "2021-11-12"
+weight: 6
 ---
 
 ##  概述
