@@ -4,9 +4,13 @@ type: book
 weight: 1
 ---
 
+## 概述
+
+本文记录网络超时的可能原因。
+
 ## 网络丢包
 
-参考 [网络丢包排查](https://imroc.cc/k8s/troubleshooting/network/) 。
+参考 [网络丢包排查](https://imroc.cc/k8s/troubleshooting/drop-packets/) 。
 
 ## cpu 限流 (throttled)
 
