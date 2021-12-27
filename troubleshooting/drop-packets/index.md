@@ -73,6 +73,12 @@ MTU 大小可以通过 `ip address show` 或 `ifconfig` 来确认。
 netstat -s | grep -E 'drop|overflow'
 ```
 
+全连接队列可以观察 `Rec-Q`:
+
+```bash
+ss -lnt
+```
+
 通过以下内核参数可以调整队列大小 (namespace隔离):
 ```bash
 net.ipv4.tcp_max_syn_backlog = 8096 # 调整半连接队列上限
