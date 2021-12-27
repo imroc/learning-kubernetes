@@ -14,8 +14,8 @@ weight: 4
   * 临时: 重启 kubelet
   * 彻底: 升级 K8S 版本到 1.19+
 
-## 内核 bug 导致大量不必要的 cpu throttle
-* 现象: cpu 使用远远没达到 limit，但仍然频繁被 throttle
+## 内核 bug 导致大量不必要的 cpu 限流
+* 现象: cpu 使用远远没达到 limit，但仍然频繁被 throttle。
 * 相关 issue: [#67577](https://github.com/kubernetes/kubernetes/issues/67577)
 * 原因: 内核调度器的 bug 导致。
 * KubeCon 分享: https://sched.co/Uae1
