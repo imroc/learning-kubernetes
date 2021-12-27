@@ -22,5 +22,5 @@ weight: 4
 * KubeCon 分享视频: https://www.youtube.com/watch?v=UE7QX98-kO0
 * 修复 commit: [de53fd7a](https://github.com/torvalds/linux/commit/de53fd7aedb100f03e5d2231cfce0e4993282425)
 * 修复版本:
-  * linux 官方稳定内核版本: 4.14.154+, 4.19.84+, 5.3.9+, 5.4
+  * linux 官方稳定内核版本: 4.14.154+, 4.19.84+, 5.3.9+, 5.4+
   * 发行版内核: ubuntu 4.15.0-67+ 和 5.3.0-24+，RHEL7 kernel-3.10.0-1062.8.1.el7，TencentOS 4.14.105-19-0013+ ([commit](https://github.com/Tencent/TencentOS-kernel/commit/77d6fbc204337530f9030a4d700e00cd13618368))
