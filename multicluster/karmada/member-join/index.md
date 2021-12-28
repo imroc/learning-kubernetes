@@ -72,8 +72,10 @@ eks    v1.18.4-tke.14-eks.1-dirty   Push   True    4d23h
 
 ## 如何选择？
 
-我建议尽量使用 push 模式，相比 pull 模式的优势:
+push 模式的优势:
 1. 注册与注销的方法非常简单，也无需在成员集群安装 agent，易于维护。
 2. 支持 `karmadactl get` 操作，方便在 karmada 控制集群就能看到工作负载在各个集群的部署情况。
 
-只有控制集群无法主动访问到成员集群 apiserver 地址的情况下，才选择 pull 模式。
+pull 模式的优势：
+1. member 集群不需要暴露 apiserver。
+2. member 集群中的 agent 可以分担 Karmada 控制面的压力，可以支持非常大规模集群数量的场景。
