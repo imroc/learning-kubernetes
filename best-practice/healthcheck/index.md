@@ -4,6 +4,7 @@ type: book
 date: "2021-12-1"
 ---
 > 本文有也有视频教程版: https://www.bilibili.com/video/BV16q4y1y7B9
+
 ## 概述
 
 本文分享 K8S 健康检查配置的最佳实践，文末也分享配置不当的案例。
