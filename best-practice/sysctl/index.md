@@ -16,12 +16,22 @@ net.netfilter.nf_conntrack_tcp_timeout_time_wait = 30
 # 以下三个参数是 arp 缓存的 gc 阀值，相比默认值提高了，避免在某些场景下arp缓存溢出导致网络超时，参考：https://k8s.imroc.io/troubleshooting/cases/arp-cache-overflow-causes-healthcheck-failed
 net.ipv4.neigh.default.gc_thresh1="2048"
 net.ipv4.neigh.default.gc_thresh2="4096"
-net.ipv4.neigh.default.gc_thresh3="8192""
+net.ipv4.neigh.default.gc_thresh3="8192"
 
 net.ipv4.tcp_max_orphans="32768"
 vm.max_map_count="262144"
 kernel.threads-max="30058"
 net.ipv4.ip_forward="1"
+
+# 磁盘 IO 优化: https://www.cnblogs.com/276815076/p/5687814.html
+vm.dirty_background_bytes = 0
+vm.dirty_background_ratio = 5
+vm.dirty_bytes = 0
+vm.dirty_expire_centisecs = 50
+vm.dirty_ratio = 10
+vm.dirty_writeback_centisecs = 50
+vm.dirtytime_expire_seconds = 43200
+
 ```
 
 ### nf_conntrack_tcp_be_liberal
